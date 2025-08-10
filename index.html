@@ -3,67 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>India Income Tax Calculator</title>
+<title>India Income Tax Calculator 2025</title>
 <style>
     body {
         font-family: Arial, sans-serif;
-        background: #f4f4f9;
+        background: #f4f4f4;
         margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    h1 {
-        color: #333;
-        margin-top: 20px;
+        padding: 20px;
     }
     .container {
         background: white;
+        max-width: 400px;
+        margin: auto;
         padding: 20px;
-        margin-top: 20px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        width: 300px;
     }
-    label, input, button {
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+    label {
+        font-weight: bold;
         display: block;
-        width: 100%;
-        margin-bottom: 15px;
+        margin-top: 10px;
     }
     input {
+        width: 100%;
         padding: 8px;
-        border-radius: 5px;
+        margin-top: 5px;
         border: 1px solid #ccc;
+        border-radius: 5px;
     }
     button {
+        width: 100%;
         padding: 10px;
-        background: #4CAF50;
-        color: white;
+        margin-top: 15px;
         border: none;
-        border-radius: 5px;
+        background: #007BFF;
+        color: white;
+        font-size: 16px;
         cursor: pointer;
+        border-radius: 5px;
     }
     button:hover {
-        background: #45a049;
+        background: #0056b3;
     }
     .result {
-        font-weight: bold;
         margin-top: 15px;
-        color: #444;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        font-weight: bold;
     }
 </style>
 </head>
 <body>
-
-<h1>India Income Tax Calculator</h1>
 <div class="container">
-    <label for="income">Annual Income (₹):</label>
-    <input type="number" id="income" placeholder="Enter your income">
-
-    <label for="age">Age:</label>
-    <input type="number" id="age" placeholder="Enter your age">
-
+    <h2>Income Tax Calculator (2025)</h2>
+    <label for="income">Enter Annual Taxable Income (₹):</label>
+    <input type="number" id="income" placeholder="E.g. 850000">
     <button onclick="calculateTax()">Calculate Tax</button>
     <div class="result" id="result"></div>
 </div>
@@ -71,39 +70,42 @@
 <script>
 function calculateTax() {
     let income = parseFloat(document.getElementById("income").value);
-    let age = parseInt(document.getElementById("age").value);
-    let tax = 0;
-
-    if (isNaN(income) || isNaN(age) || income < 0 || age <= 0) {
-        document.getElementById("result").innerText = "Please enter valid income and age.";
+    if (isNaN(income) || income < 0) {
+        document.getElementById("result").innerHTML = "Please enter a valid income.";
         return;
     }
 
-    // Slabs for FY 2023-24 (Old Regime)
-    if (age < 60) {
-        if (income <= 250000) tax = 0;
-        else if (income <= 500000) tax = (income - 250000) * 0.05;
-        else if (income <= 1000000) tax = 12500 + (income - 500000) * 0.2;
-        else tax = 112500 + (income - 1000000) * 0.3;
-    } else if (age < 80) {
-        if (income <= 300000) tax = 0;
-        else if (income <= 500000) tax = (income - 300000) * 0.05;
-        else if (income <= 1000000) tax = 10000 + (income - 500000) * 0.2;
-        else tax = 110000 + (income - 1000000) * 0.3;
-    } else {
-        if (income <= 500000) tax = 0;
-        else if (income <= 1000000) tax = (income - 500000) * 0.2;
-        else tax = 100000 + (income - 1000000) * 0.3;
+    let tax = 0;
+    let slabs = [
+        {limit: 400000, rate: 0},
+        {limit: 800000, rate: 0.05},
+        {limit: 1200000, rate: 0.10},
+        {limit: 1600000, rate: 0.15},
+        {limit: 2000000, rate: 0.20},
+        {limit: 2400000, rate: 0.25},
+        {limit: Infinity, rate: 0.30}
+    ];
+
+    let prevLimit = 0;
+    for (let i = 0; i < slabs.length; i++) {
+        if (income > slabs[i].limit) {
+            tax += (slabs[i].limit - prevLimit) * slabs[i].rate;
+            prevLimit = slabs[i].limit;
+        } else {
+            tax += (income - prevLimit) * slabs[i].rate;
+            break;
+        }
     }
 
-    // 4% Cess
+    // Add 4% cess
     let cess = tax * 0.04;
     let totalTax = tax + cess;
 
-    document.getElementById("result").innerText =
-        `Tax: ₹${tax.toFixed(2)}, Cess: ₹${cess.toFixed(2)}, Total: ₹${totalTax.toFixed(2)}`;
+    document.getElementById("result").innerHTML =
+        `Tax before cess: ₹${tax.toFixed(2)}<br>` +
+        `Cess (4%): ₹${cess.toFixed(2)}<br>` +
+        `<strong>Total Tax Payable: ₹${totalTax.toFixed(2)}</strong>`;
 }
 </script>
-
 </body>
 </html>
